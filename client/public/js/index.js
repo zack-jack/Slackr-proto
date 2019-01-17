@@ -11,10 +11,11 @@ socket.on('disconnect', () => {
 });
 
 // Listen for new message from server
-socket.on('newMessage', ({ from, body }) => {
-  console.log('New message', { from, body });
+socket.on('newMessage', ({ from, body, createdAt }) => {
+  const formattedTime = moment(createdAt).format('h:mm a');
+
   let li = jQuery('<li></li>');
-  li.text(`${from}: ${body}`);
+  li.text(`${from} ${formattedTime}: ${body}`);
 
   jQuery('#messages').append(li);
 });

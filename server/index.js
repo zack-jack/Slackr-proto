@@ -23,7 +23,7 @@ io.on('connection', socket => {
   console.log('New user connected');
 
   // On connect send only to the new user that joined
-  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the channel'));
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to Slackr!'));
 
   // On new user join, broadcast message to all other connected users
   socket.broadcast.emit(
