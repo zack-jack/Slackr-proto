@@ -35,7 +35,7 @@ io.on('connection', socket => {
   socket.on('createMessage', ({ from, body }, callback) => {
     console.log('createMessage', { from, body });
     io.emit('newMessage', generateMessage(from, body));
-    callback('This is from the server');
+    callback();
   });
 
   // Listen for disconnect event

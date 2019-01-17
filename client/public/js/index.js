@@ -19,26 +19,19 @@ socket.on('newMessage', ({ from, body }) => {
   jQuery('#messages').append(li);
 });
 
-socket.emit(
-  'createMessage',
-  {
-    from: 'Frank',
-    body: 'hi'
-  },
-  data => {
-    console.log('Got it', data);
-  }
-);
-
 jQuery('#message-form').on('submit', e => {
   e.preventDefault();
+
+  const messageInput = jQuery('[name=message]');
 
   socket.emit(
     'createMessage',
     {
       from: 'User',
-      body: jQuery('[name=message]').val()
+      body: messageInput.val()
     },
-    () => {}
+    () => {
+      messageInput.val('');
+    }
   );
 });
