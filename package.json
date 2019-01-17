@@ -1,0 +1,22 @@
+{
+  "name": "Slackr",
+  "version": "1.0.0",
+  "description": "Realtime collaboration chat app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "nodemon server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "11.1.0"
+  },
+  "author": "Zack Jackson",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
