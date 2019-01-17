@@ -32,9 +32,10 @@ io.on('connection', socket => {
   );
 
   // Listen for messages from client then emit new messages to all
-  socket.on('createMessage', ({ from, body }) => {
+  socket.on('createMessage', ({ from, body }, callback) => {
     console.log('createMessage', { from, body });
     io.emit('newMessage', generateMessage(from, body));
+    callback('This is from the server');
   });
 
   // Listen for disconnect event
