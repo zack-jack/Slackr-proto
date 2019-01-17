@@ -13,11 +13,14 @@ socket.on('disconnect', () => {
 // Listen for new message from server
 socket.on('newMessage', ({ from, body, createdAt }) => {
   const formattedTime = moment(createdAt).format('h:mm a');
+  const template = jQuery('#message-template').html();
+  const html = Mustache.render(template, {
+    from,
+    body,
+    createdAt: formattedTime
+  });
 
-  let li = jQuery('<li></li>');
-  li.text(`${from} ${formattedTime}: ${body}`);
-
-  jQuery('#messages').append(li);
+  jQuery('#messages').append(html);
 });
 
 jQuery('#message-form').on('submit', e => {
