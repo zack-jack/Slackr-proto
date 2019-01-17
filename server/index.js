@@ -16,32 +16,25 @@ const publicPath = path.join(__dirname, '../client/public');
 // Serve static files
 app.use(express.static(publicPath));
 
+const { generateMessage } = require('./socket/utils/message');
+
 // Listen for connection event
 io.on('connection', socket => {
   console.log('New user connected');
 
   // On connect send only to the new user that joined
-  socket.emit('newMessage', {
-    from: 'Admin',
-    body: 'Welcome to the channel',
-    createdAt: new Date().getTime()
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the channel'));
 
   // On new user join, broadcast message to all other connected users
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    body: 'New user joined',
-    createdAt: new Date().getTime()
-  });
+  socket.broadcast.emit(
+    'newMessage',
+    generateMessage('Admin', 'New user joined')
+  );
 
   // Listen for messages from client then emit new messages to all
   socket.on('createMessage', ({ from, body }) => {
     console.log('createMessage', { from, body });
-    io.emit('newMessage', {
-      from,
-      body,
-      createdAt: new Date().getTime()
-    });
+    io.emit('newMessage', generateMessage(from, body));
   });
 
   // Listen for disconnect event
