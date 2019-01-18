@@ -63,8 +63,12 @@ io.on('connection', socket => {
 
   // Listen for messages from client then emit new messages to all
   socket.on('createMessage', ({ from, body }, callback) => {
-    console.log('createMessage', { from, body });
-    io.emit('newMessage', generateMessage(from, body));
+    const user = users.getUser(socket.id);
+
+    if (user && isRealString(body)) {
+      io.to(user.channel).emit('newMessage', generateMessage(user.name, body));
+    }
+
     callback();
   });
 
