@@ -23,7 +23,18 @@ const scrollToBottom = () => {
 
 // Listen for connection to the server
 socket.on('connect', () => {
-  console.log('Connected to server');
+  // Pulls query string and turns key values into an object
+  const params = jQuery.deparam(window.location.search);
+
+  // Listen for a join event and pass params
+  socket.emit('join', params, err => {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
 });
 
 // Listen for server disconnect
