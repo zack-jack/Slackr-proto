@@ -3,6 +3,10 @@ const path = require('path');
 const http = require('http');
 const socket = require('socket.io');
 
+const { generateMessage } = require('./socket/utils/message');
+const { isRealString } = require('./socket/utils/validation');
+const { Users } = require('./socket/utils/users');
+
 // Express app setup
 const app = express();
 
@@ -13,11 +17,10 @@ const io = socket(server);
 const port = process.env.PORT || 5000;
 const publicPath = path.join(__dirname, '../client/public');
 
+const users = new Users();
+
 // Serve static files
 app.use(express.static(publicPath));
-
-const { generateMessage } = require('./socket/utils/message');
-const { isRealString } = require('./socket/utils/validation');
 
 // Listen for connection event
 io.on('connection', socket => {
@@ -26,11 +29,23 @@ io.on('connection', socket => {
   // Listen for user join
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.channel)) {
-      callback('Display name and channel name fields are required');
+      return callback('Display name and channel name fields are required');
     }
 
     // User joins the channel
     socket.join(params.channel);
+
+    // Remove user from the room if they had previously visited
+    users.removeUser(socket.id);
+
+    // Add the user to the users list
+    users.addUser(socket.id, params.name, params.channel);
+
+    // Update the user list in the proper channel
+    io.to(params.channel).emit(
+      'updateUserList',
+      users.getUserList(params.channel)
+    );
 
     // On connect send only to the new user that joined
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to Slackr!'));
@@ -56,6 +71,19 @@ io.on('connection', socket => {
   // Listen for disconnect event
   socket.on('disconnect', () => {
     console.log('User disconnected');
+
+    const user = users.removeUser(socket.id);
+
+    if (user) {
+      io.to(user.channel).emit(
+        'updateUserList',
+        users.getUserList(user.channel)
+      );
+      io.to(user.channel).emit(
+        'newMessage',
+        generateMessage('Admin', `${user.name} has left the channel`)
+      );
+    }
   });
 });
 
